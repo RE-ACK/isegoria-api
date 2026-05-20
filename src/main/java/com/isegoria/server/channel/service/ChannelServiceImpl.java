@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.isegoria.server.channel.entity.Channel;
+import com.isegoria.server.channel.entity.ChannelType;
 import com.isegoria.server.channel.repository.ChannelRepository;
 import com.isegoria.server.channel.request.CreateChannelRequest;
 import com.isegoria.server.channel.request.UpdateChannelRequest;
@@ -122,5 +123,27 @@ public class ChannelServiceImpl implements ChannelService {
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(() -> new ApiException(ErrorCode.CHANNEL_NOT_FOUND));
     channelRepository.delete(channel);
+  }
+
+  /**
+   * 서버 생성 시 기본 채널 생성
+   * 
+   * @param Long serverId
+   */
+  @Override
+  public void createDefaultChannels(Long serverId) {
+    CreateChannelRequest textChannelRequest = CreateChannelRequest.builder()
+        .serverId(serverId)
+        .name("채팅 채널")
+        .type(ChannelType.TEXT)
+        .build();
+    this.create(textChannelRequest);
+
+    CreateChannelRequest voiceChannelRequest = CreateChannelRequest.builder()
+        .serverId(serverId)
+        .name("음성 채널")
+        .type(ChannelType.VOICE)
+        .build();
+    this.create(voiceChannelRequest);
   }
 }

@@ -1,5 +1,6 @@
 package com.isegoria.server.server.service;
 
+import com.isegoria.server.channel.service.ChannelService;
 import com.isegoria.server.global.error.ErrorCode;
 import com.isegoria.server.global.exception.ApiException;
 import com.isegoria.server.image.service.ImageService;
@@ -28,6 +29,7 @@ public class ServerServiceImpl implements ServerService {
     private final ServerRepository serverRepository;
     private final ServerMemberRepository serverMemberRepository;
     private final ImageService imageService;
+    private final ChannelService channelService;
 
     // ───────────────────────────────────────────
     // 서버 생성
@@ -47,6 +49,8 @@ public class ServerServiceImpl implements ServerService {
             newServer.setIconUrl(images.get(0));
             newServer = serverRepository.save(newServer);
         }
+
+        channelService.createDefaultChannels(newServer.getId());
 
         ServerMember ownerMember = CreateServerRequest.toOwnerMember(newServer, ownerId);
         serverMemberRepository.save(ownerMember);

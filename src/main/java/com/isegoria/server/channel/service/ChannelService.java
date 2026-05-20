@@ -17,4 +17,6 @@ public interface ChannelService {
     void delete(Long channelId);
 
     ChannelResponse getChannel(Long channelId);
+
+    void createDefaultChannels(Long serverId);
 }
