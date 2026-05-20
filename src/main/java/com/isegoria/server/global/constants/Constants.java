@@ -19,4 +19,5 @@ public class Constants {
   private long accessTokenExpiredAt;
   private long refreshTokenExpiredAt;
   private String fileUrl;
+  private String internalApiKey;
 }

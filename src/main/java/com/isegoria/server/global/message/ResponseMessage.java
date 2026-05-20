@@ -18,7 +18,12 @@ public enum ResponseMessage implements ResponseMessageInterface {
 
   // 유저 관련
   UPDATE_USER_SUCCESS("회원 정보가 성공적으로 업데이트되었습니다."),
-  DELETE_USER_SUCCESS("회원 탈퇴가 성공적으로 완료되었습니다.");
+  DELETE_USER_SUCCESS("회원 탈퇴가 성공적으로 완료되었습니다."),
+
+  // 채널 관련
+  CREATE_CHANNEL_SUCCESS("채널이 성공적으로 생성되었습니다."),
+  UPDATE_CHANNEL_SUCCESS("채널 정보가 성공적으로 업데이트되었습니다."),
+  DELETE_CHANNEL_SUCCESS("채널이 성공적으로 삭제되었습니다.");
 
   private final String message;
 }

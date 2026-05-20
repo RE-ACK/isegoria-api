@@ -1,14 +1,12 @@
 package com.isegoria.server.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.isegoria.server.global.jwt.JwtAccessDeniedHandler;
-import com.isegoria.server.global.jwt.JwtAuthenticationEntryPoint;
-import com.isegoria.server.global.jwt.JwtAuthenticationFilter;
-import com.isegoria.server.global.jwt.JwtProvider;
+import com.isegoria.server.global.jwt.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +28,9 @@ public class SecurityConfig {
   private final ObjectMapper objectMapper;
   private final JwtProvider jwtProvider;
 
+  @Value("${app.internal-api-key}")
+  private String internalApiKey;
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
@@ -40,6 +41,7 @@ public class SecurityConfig {
             .requestMatchers("/auth/**").permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new InternalApiKeyAuthenticationFilter(internalApiKey), UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(exception -> exception
             .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
             .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper)));
