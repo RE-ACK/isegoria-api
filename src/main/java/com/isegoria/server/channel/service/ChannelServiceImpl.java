@@ -134,14 +134,14 @@ public class ChannelServiceImpl implements ChannelService {
   public void createDefaultChannels(Long serverId) {
     CreateChannelRequest textChannelRequest = CreateChannelRequest.builder()
         .serverId(serverId)
-        .name("채팅 채널")
+        .name("채팅")
         .type(ChannelType.TEXT)
         .build();
     this.create(textChannelRequest);
 
     CreateChannelRequest voiceChannelRequest = CreateChannelRequest.builder()
         .serverId(serverId)
-        .name("음성 채널")
+        .name("일반")
         .type(ChannelType.VOICE)
         .build();
     this.create(voiceChannelRequest);
