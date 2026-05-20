@@ -3,6 +3,7 @@ package com.isegoria.server.server.service;
 import com.isegoria.server.server.entity.Server;
 import com.isegoria.server.server.request.CreateServerRequest;
 import com.isegoria.server.server.response.InviteCodeResponse;
+import com.isegoria.server.server.response.ServerMemberResponse;
 
 import java.util.List;
 
@@ -31,6 +32,9 @@ public interface ServerService {
 
     // 초대 코드 재발급
     InviteCodeResponse regenerateInviteCode(Long ownerId, Long serverId);
+
+    // 서버 멤버 목록 조회
+    List<ServerMemberResponse> getServerMembers(Long userId, Long serverId);
 
     // 서버 삭제
     void deleteServer(Long ownerId, Long serverId);
