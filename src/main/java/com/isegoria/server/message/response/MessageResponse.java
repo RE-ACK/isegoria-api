@@ -3,8 +3,6 @@ package com.isegoria.server.message.response;
 import java.time.LocalDateTime;
 
 import com.isegoria.server.message.entity.Message;
-import com.isegoria.server.user.response.UserResponse;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,16 +17,18 @@ import lombok.ToString;
 public class MessageResponse {
     private Long id;
     private Long channelId;
+    private Long senderId;
     private String senderName;
     private String content;
-    private UserResponse sender;
+    private String senderImage;
     private LocalDateTime createdAt;
 
     public static MessageResponse fromEntity(Message message) {
         return MessageResponse.builder()
                 .id(message.getId())
                 .channelId(message.getChannel().getId())
-                .sender(UserResponse.fromEntity(message.getSender()))
+                .senderId(message.getSender().getId())
+                .senderImage(message.getSender().getAvatarUrl())
                 .senderName(message.getSender().getUsername())
                 .content(message.getContent())
                 .createdAt(message.getCreatedAt())

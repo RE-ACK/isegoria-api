@@ -34,7 +34,8 @@ public class MessageController {
    *         - String content,
    *         - Long channelId,
    *         - Long senderId,
-   *         - UserResponse sender,
+   *         - String senderName,
+   *         - String senderImage,
    *         - LocalDateTime createdAt
    */
   @ServerMember
@@ -57,7 +58,8 @@ public class MessageController {
    *         - String content,
    *         - Long channelId,
    *         - Long senderId,
-   *         - UserResponse sender,
+   *         - String senderName,
+   *         - String senderImage,
    *         - LocalDateTime createdAt
    */
   @ServerMember

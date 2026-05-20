@@ -36,7 +36,8 @@ public class MessageServiceImpl implements MessageService {
      *         - String content,
      *         - Long channelId,
      *         - Long senderId,
-     *         - UserResponse sender,
+     *         - String senderName,
+     *         - String senderImage,
      *         - LocalDateTime createdAt
      */
     @Override
@@ -59,7 +60,8 @@ public class MessageServiceImpl implements MessageService {
      *         - String content,
      *         - Long channelId,
      *         - Long senderId,
-     *         - UserResponse sender,
+     *         - String senderName,
+     *         - String senderImage,
      *         - LocalDateTime createdAt
      */
     @Override
@@ -68,6 +70,7 @@ public class MessageServiceImpl implements MessageService {
             throw new ApiException(ErrorCode.CHANNEL_NOT_FOUND);
         }
 
+        // 커서 기반 페이지네이션으로 메시지 조회
         List<Message> messages = messageRepository.findMessagesCursor(channelId, lastMessageId, size);
         List<MessageResponse> response = messages.stream()
                 .map(MessageResponse::fromEntity)
