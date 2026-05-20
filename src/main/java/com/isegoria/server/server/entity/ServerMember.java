@@ -1,5 +1,6 @@
 package com.isegoria.server.server.entity;
 
+import com.isegoria.server.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,6 +28,10 @@ public class ServerMember {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

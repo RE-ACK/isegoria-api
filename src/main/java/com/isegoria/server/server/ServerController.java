@@ -8,6 +8,7 @@ import com.isegoria.server.server.entity.Server;
 import com.isegoria.server.server.request.CreateServerRequest;
 import com.isegoria.server.server.request.JoinServerRequest;
 import com.isegoria.server.server.response.InviteCodeResponse;
+import com.isegoria.server.server.response.ServerMemberResponse;
 import com.isegoria.server.server.response.ServerResponse;
 import com.isegoria.server.server.service.ServerService;
 import jakarta.validation.Valid;
@@ -32,7 +33,7 @@ public class ServerController {
 
         // Long ownerId = (userId != null) ? userId : 1L; // TODO: auth 구현 후 제거
         Server server = serverService.createServer(user.getId(), request);
-        return Api.OK(ServerResponse.from(server), ResponseMessage.CREATE_SERVER_SUCCESS);
+        return Api.OK(ServerResponse.fromEntity(server), ResponseMessage.CREATE_SERVER_SUCCESS);
     }
 
     // PUT /servers/{serverId} — 서버 정보 수정 (OWNER만 가능)
@@ -43,7 +44,7 @@ public class ServerController {
             @Valid @RequestBody CreateServerRequest request) {
 
         Server updatedServer = serverService.updateServer(user.getId(), serverId, request);
-        return Api.OK(ServerResponse.from(updatedServer), ResponseMessage.UPDATE_SERVER_SUCCESS);
+        return Api.OK(ServerResponse.fromEntity(updatedServer), ResponseMessage.UPDATE_SERVER_SUCCESS);
     }
 
     // POST /servers/join — 초대 코드로 서버 입장
@@ -54,7 +55,7 @@ public class ServerController {
 
         // Long joinerId = (userId != null) ? userId : 2L; // TODO: auth 구현 후 제거
         Server server = serverService.joinServer(user.getId(), request.getInviteCode());
-        return Api.OK(ServerResponse.from(server));
+        return Api.OK(ServerResponse.fromEntity(server));
     }
 
     // GET /servers/{serverId} — 서버 정보 조회
@@ -64,7 +65,7 @@ public class ServerController {
             @PathVariable Long serverId) {
 
         Server server = serverService.findById(serverId);
-        return Api.OK(ServerResponse.from(server));
+        return Api.OK(ServerResponse.fromEntity(server));
     }
 
     // GET /servers/my — 내 서버 목록
@@ -75,9 +76,18 @@ public class ServerController {
         // Long id = (userId != null) ? userId : 1L; // TODO: auth 구현 후 제거
         List<ServerResponse> responses = serverService.getServerList(user.getId())
                 .stream()
-                .map(ServerResponse::from)
+                .map(ServerResponse::fromEntity)
                 .toList();
         return Api.OK(responses);
+    }
+
+    // GET /servers/{serverId}/members — 서버 멤버 목록 조회
+    @GetMapping("/{serverId}/members")
+    public Api<List<ServerMemberResponse>> getServerMembers(
+            @CurrentUser JwtPayload user,
+            @PathVariable Long serverId) {
+
+        return Api.OK(serverService.getServerMembers(user.getId(), serverId));
     }
 
     // DELETE /servers/{serverId} — 서버 삭제

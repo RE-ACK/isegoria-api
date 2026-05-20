@@ -11,6 +11,7 @@ import com.isegoria.server.server.repository.ServerRepository;
 import com.isegoria.server.server.request.CreateServerRequest;
 import com.isegoria.server.server.request.JoinServerRequest;
 import com.isegoria.server.server.response.InviteCodeResponse;
+import com.isegoria.server.server.response.ServerMemberResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -122,12 +123,29 @@ public class ServerServiceImpl implements ServerService {
     }
 
     // ───────────────────────────────────────────
+    // 서버 멤버 목록 조회
+    // ───────────────────────────────────────────
+    @Transactional(readOnly = true)
+    @Override
+    public List<ServerMemberResponse> getServerMembers(Long userId, Long serverId) {
+        Server server = findById(serverId);
+
+        serverMemberRepository.findByServerAndUserId(server, userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
+
+        return serverMemberRepository.findAllWithUserByServer(server)
+                .stream()
+                .map(ServerMemberResponse::fromEntity)
+                .toList();
+    }
+
+    // ───────────────────────────────────────────
     // 서버 나가기 (OWNER 불가)
     // ───────────────────────────────────────────
     @Transactional
     @Override
     public void leaveServer(Long userId, Long serverId) {
-        Server server = findServerById(serverId);
+        Server server = findById(serverId);
 
         ServerMember member = serverMemberRepository.findByServerAndUserId(server, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
@@ -145,7 +163,7 @@ public class ServerServiceImpl implements ServerService {
     @Transactional
     @Override
     public void kickMember(Long ownerId, Long serverId, Long targetUserId) {
-        Server server = findServerById(serverId);
+        Server server = findById(serverId);
 
         ServerMember requester = serverMemberRepository.findByServerAndUserId(server, ownerId)
                 .orElseThrow(() -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
@@ -170,7 +188,7 @@ public class ServerServiceImpl implements ServerService {
     @Transactional
     @Override
     public InviteCodeResponse regenerateInviteCode(Long ownerId, Long serverId) {
-        Server server = findServerById(serverId);
+        Server server = findById(serverId);
 
         ServerMember requester = serverMemberRepository.findByServerAndUserId(server, ownerId)
                 .orElseThrow(() -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
@@ -191,7 +209,7 @@ public class ServerServiceImpl implements ServerService {
     @Transactional
     @Override
     public void deleteServer(Long ownerId, Long serverId) {
-        Server server = findServerById(serverId);
+        Server server = findById(serverId);
 
         ServerMember requester = serverMemberRepository.findByServerAndUserId(server, ownerId)
                 .orElseThrow(() -> new ApiException(ErrorCode.MEMBER_NOT_FOUND));
@@ -214,7 +232,8 @@ public class ServerServiceImpl implements ServerService {
     // ───────────────────────────────────────────
     // 헬퍼 메서드
     // ───────────────────────────────────────────
-    private Server findServerById(Long serverId) {
+    @Override
+    public Server findById(Long serverId) {
         return serverRepository.findById(serverId)
                 .orElseThrow(() -> new ApiException(ErrorCode.SERVER_NOT_FOUND));
     }
@@ -228,10 +247,5 @@ public class ServerServiceImpl implements ServerService {
             sb.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
         }
         return sb.toString();
-    }
-
-    public Server findById(Long serverId) {
-        return serverRepository.findById(serverId)
-                .orElseThrow(() -> new ApiException(ErrorCode.SERVER_NOT_FOUND));
     }
 }
