@@ -32,7 +32,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     response.setContentType("application/json;charset=UTF-8");
     response.setCharacterEncoding("UTF-8");
 
-    Api<Object> errorResponse = Api.ERROR(ErrorCode.FORBIDDEN, request.getRequestURI());
+    Api<Object> errorResponse = Api.ERROR(ErrorCode.FORBIDDEN);
 
     objectMapper.writeValue(response.getWriter(), errorResponse);
   }
