@@ -38,6 +38,12 @@ public enum ErrorCode implements ErrorCodeInterface {
   NO_PERMISSION(HttpStatus.FORBIDDEN.value(), "권한이 없습니다."),
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "해당 멤버가 서버에 없습니다."),
   DELETE_SERVER_FAILED(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 삭제에 실패했습니다."),
+  NOT_OWNER_IN_THIS_SERVER(HttpStatus.FORBIDDEN.value(), "해당 서버의 소유자가 아닙니다"),
+  NOT_MEMBER_IN_THIS_SERVER(HttpStatus.FORBIDDEN.value(), "해당 서버의 멤버가 아닙니다"),
+  CANNOT_IDENTIFY_SERVER_ID(HttpStatus.BAD_REQUEST.value(), "서버 ID를 식별할 수 없습니다."),
+
+  // Channel 관련 에러
+  CHANNEL_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 채널입니다."),
 
   // User 관련 에러
   DELETE_USER_FAILED(HttpStatus.INTERNAL_SERVER_ERROR.value(), "사용자 삭제에 실패했습니다."),

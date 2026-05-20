@@ -22,4 +22,7 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
 
     // 서버 삭제 시 멤버 전체 삭제
     void deleteAllByServer(Server server);
+
+    // 서버 멤버인지 확인 (권한 체크 시 사용)
+    boolean existsByServerIdAndUserId(Long serverId, Long userId);
 }

@@ -45,6 +45,10 @@ public class Api<T> {
         .build();
   }
 
+  public static Api<Void> OK() {
+    return build(200, ErrorCode.OK.getMessage(), null);
+  }
+
   public static <T> Api<T> OK(T data) {
     return build(200, ErrorCode.OK.getMessage(), data);
   }
