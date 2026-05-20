@@ -11,6 +11,8 @@ import com.isegoria.server.message.entity.Message;
 import com.isegoria.server.message.repository.MessageRepository;
 import com.isegoria.server.message.request.CreateMessageRequest;
 import com.isegoria.server.message.response.MessageResponse;
+import com.isegoria.server.user.entity.User;
+import com.isegoria.server.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
     private final ChannelRepository channelRepository;
+    private final UserRepository userRepository;
 
     /**
      * 메세지 생성
@@ -43,7 +46,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional
     public MessageResponse create(CreateMessageRequest request, Long userId) {
-        Message message = CreateMessageRequest.toEntity(request, userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Message message = CreateMessageRequest.toEntity(request, user);
         Message savedMessage = messageRepository.save(message);
         MessageResponse response = MessageResponse.fromEntity(savedMessage);
         return response;

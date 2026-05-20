@@ -22,9 +22,9 @@ public class CreateMessageRequest {
   @NotBlank(message = "메시지 내용을 입력하세요.")
   private String content;
 
-  public static Message toEntity(CreateMessageRequest request, Long userId) {
+  public static Message toEntity(CreateMessageRequest request, User user) {
     return Message.builder()
-        .sender(User.builder().id(userId).build())
+        .sender(user)
         .channel(Channel.builder().id(request.getChannelId()).build())
         .content(request.getContent())
         .build();
