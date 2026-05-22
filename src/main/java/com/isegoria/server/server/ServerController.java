@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController // HTTP 요청 받는걸 명시한다
 @RequestMapping("/servers") // 모든 URL 앞에 /servers 붙는다
-@RequiredArgsConstructor // ServerService를 자동 붙힌다
+@RequiredArgsConstructor 
 public class ServerController {
 
     private final ServerService serverService;
