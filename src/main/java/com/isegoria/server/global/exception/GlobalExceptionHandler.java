@@ -2,6 +2,8 @@ package com.isegoria.server.global.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -46,6 +48,21 @@ public class GlobalExceptionHandler {
     return ResponseEntity
         .status(500)
         .body(Api.ERROR(ErrorCode.SERVER_ERROR));
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Api<Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
+    FieldError fieldError = e.getBindingResult().getFieldErrors().get(0);
+
+    String errorMessage = fieldError.getDefaultMessage();
+
+    log.warn("유효성 검사 실패 - 필드: {}, 메시지: {}",
+        fieldError.getField(), errorMessage, e);
+
+    return ResponseEntity
+        .badRequest()
+        .body(Api.ERROR(ErrorCode.INVALID_INPUT, errorMessage));
   }
 
   private ErrorCode mapToErrorCode(RuntimeException e) {

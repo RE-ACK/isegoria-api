@@ -1,0 +1,84 @@
+package com.isegoria.server.global.jwt;
+
+import java.io.IOException;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.isegoria.server.global.error.ErrorCode;
+import com.isegoria.server.global.exception.ApiException;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+  private final JwtProvider jwtProvider;
+
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+
+    try {
+      String accessToken = getAccessTokenFromHeader(request);
+
+      if (accessToken == null) {
+        log.debug("헤더에 액세스 토큰이 없습니다. URI: {}", request.getRequestURI());
+        filterChain.doFilter(request, response);
+        return;
+      }
+
+      Claims claims = jwtProvider.validateAccessToken(accessToken);
+
+      if (claims == null) {
+        log.warn("유효하지 않은 액세스 토큰입니다. URI: {}", request.getRequestURI());
+        throw new ApiException(ErrorCode.INVALID_ACCESS_TOKEN);
+      }
+
+      Long userId = Long.valueOf(claims.getSubject());
+      if (userId == null) {
+        throw new ApiException(ErrorCode.INVALID_ACCESS_TOKEN);
+      }
+
+      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+          new JwtPayload(userId), null, null);
+
+      authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+      SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+      log.debug("시큐리티 컨텍스트에 인증 정보 저장 완료 - UserId: {}", userId);
+
+    } catch (ExpiredJwtException e) {
+      log.warn("만료된 액세스 토큰입니다. URI: {}", request.getRequestURI());
+      throw new ApiException(ErrorCode.INVALID_ACCESS_TOKEN);
+    } catch (Exception e) {
+      log.error("JWT 인증 필터 오류. URI: {}", request.getRequestURI(), e);
+      throw new ApiException(ErrorCode.INVALID_ACCESS_TOKEN);
+    }
+
+    filterChain.doFilter(request, response);
+  }
+
+  private String getAccessTokenFromHeader(HttpServletRequest request) {
+    String header = request.getHeader("Authorization");
+
+    if (header == null || !header.startsWith("Bearer ")) {
+      return null;
+    }
+
+    return header.substring(7).trim();
+  }
+}

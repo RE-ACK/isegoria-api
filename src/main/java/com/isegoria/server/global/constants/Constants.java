@@ -14,4 +14,10 @@ public class Constants {
 
   private String appName;
   private String env;
+  private String accessTokenSecretKey;
+  private String refreshTokenSecretKey;
+  private long accessTokenExpiredAt;
+  private long refreshTokenExpiredAt;
+  private String fileUrl;
+  private String internalApiKey;
 }
